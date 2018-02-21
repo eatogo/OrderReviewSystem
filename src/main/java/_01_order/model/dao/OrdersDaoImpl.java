@@ -8,7 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import _00_utility.Db;
@@ -17,6 +19,7 @@ import _01_order.model.Orders;
 
 public class OrdersDaoImpl implements OrdersDao {
 	Connection conn;
+	private Integer order_user = null;
 
 	public OrdersDaoImpl() {
 		try {
@@ -84,8 +87,10 @@ public class OrdersDaoImpl implements OrdersDao {
 		Orders ob = null;
 		Order_details odb = null;
 		Set<Order_details> set = null;
-		String getOrdersSql = "SELECT * FROM orders WHERE order_id = ?";
-		String getOrderDetailsSql = "SELECT * FROM order_details WHERE order_id = ?";
+		String getOrdersSql = "SELECT * FROM ORDERS WHERE order_id = ?";
+		String getOrderDetailsSql = "SELECT * FROM ORDER_DETAILS WHERE order_id = ?";
+		String getOrderWithPic = "SELECT od.*, f.food_name, f.food_price, f.food_pic_mdpi"
+				+ " FROM ORDER_DETAILS od JOIN FOODS f ON od.order_food = f.food_id " + " WHERE od.order_id = ? ";
 
 		try (Connection conn = DriverManager.getConnection(Db.URLALL);
 				PreparedStatement ps1 = conn.prepareStatement(getOrdersSql);
@@ -126,5 +131,25 @@ public class OrdersDaoImpl implements OrdersDao {
 			ex.printStackTrace();
 		}
 		return ob;
+	}
+
+	@Override
+	public List<Orders> getUserOrders() {
+		String getUserOrdersSql = "SELECT order_id FROM ORDERS ORDER BY order_time desc WHERE order_user = ?";
+		List<Orders> orderIdList = new ArrayList<>();
+
+		try (Connection conn = DriverManager.getConnection(Db.URLALL);
+				PreparedStatement ps = conn.prepareStatement(getUserOrdersSql);) {
+			ps.setInt(1, order_user); // order_user來源？
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					Integer orderId = rs.getInt(1);
+					orderIdList.add(getOrderById(orderId));
+				}
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return orderIdList;
 	}
 }
