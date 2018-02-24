@@ -37,7 +37,7 @@ public class ReviewQueryServlet extends HttpServlet {
 		Gson gson = new Gson();
 		
 		/*/
-		 * 尚未處理App端送來之查詢評價請求，，查無評價之回應
+		 * 尚未處理App端送來之查詢評價請求，查無評價之回應
 		 * 測試解析Web端送來之查詢評價請求資訊 
 		 */
 		 

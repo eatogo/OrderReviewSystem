@@ -9,5 +9,8 @@ public class Db {
 	public static final String PASSWORD = "password";
 	public static final String URLALL = "jdbc:mysql://" + HOST + ":3306/" + DB + "?user=" + USER
 			+ "&password=" + PASSWORD + "&useSSL=true&useUnicode=yes&characterEncoding=UTF-8";
+	
+	public static final String JNDI_DB_NAME = "java:comp/env/jdbc/eatogodb";
+	
 }
 

@@ -10,8 +10,9 @@ public interface OrdersDao {
 	
 	Orders getOrderById (int order_id);
 	
-	List<Orders> getUserOrders ();
+	List<Integer> getOrderList(int user_id);
 	
+	List<Orders> getUserOrders (int user_id);
 	
 
 }

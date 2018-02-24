@@ -9,5 +9,9 @@ public interface ReviewsDao {
 	int insertReview(Reviews rwb);
 	
 	List<Reviews> getReviewsByFood(int review_food);
+	
+	int updateReviewCount(int food_id);
+	
+	int getReviewsNumber(); //計算推薦數
 
 }

@@ -1,7 +1,9 @@
 package _01_order.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import _01_order.model.Orders;
 import _01_order.model.dao.OrdersDao;
@@ -19,38 +22,64 @@ import _01_order.model.dao.OrdersDaoImpl;
 public class OrderQueryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
-       
-    public OrderQueryServlet() {
-        super();
-    }
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	public OrderQueryServlet() {
+		super();
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		Gson gson = new Gson();
 
+		// 以下為接收App端送來查詢訂單請求資訊準備(json格式)，未完成
+//		BufferedReader br = request.getReader();
+//		StringBuilder insertOrderJson = new StringBuilder();
+//		String line = null;
+//		while ((line = br.readLine()) != null) {
+//			insertOrderJson.append(line);
+//		}
+//		System.out.println("input: " + insertOrderJson);
+//		JsonObject insertOrderJsonObj = gson.fromJson(insertOrderJson.toString(),
+//				 JsonObject.class); // 轉為json物件
+//		String action = insertOrderJsonObj.get("action").getAsString();
+//		if (action.equals("getOrdersList")) {
+//			OrdersDao ordersDao = new OrdersDaoImpl();
+//			List<Orders> orderList = ordersDao.getOrderList();
+//			System.out.println("查詢訂單資訊: " + orderList.toString());
+//		}
+		
+		OrdersDao ordersDao = new OrdersDaoImpl();
+
 		// 解析Web端送來之查詢訂單請求資訊
 		// 尚未處理，查無訂單之回應
-//		String reviewFood = request.getParameter("review_food");
+		// String reviewFood = request.getParameter("review_food");
+		Integer user_id = Integer.parseInt(request.getParameter("user_id"));
+		List<Orders> orderByUser = ordersDao.getUserOrders(user_id);
+		ordersDao.getOrderList(user_id);
+		System.out.println("使用者訂單明細:" + orderByUser);
+		String orderByUserJson = gson.toJson(orderByUser); // Object to JSON
+		writeText(response, orderByUserJson);
+		
 		Integer order_id = Integer.parseInt(request.getParameter("order_id"));
-		OrdersDao ordersDao = new OrdersDaoImpl();
 		Orders orderBean = ordersDao.getOrderById(order_id);
 		System.out.println("查詢訂單資訊: " + orderBean.toString());
 		String orderJson = gson.toJson(orderBean); // Object to JSON
 		System.out.println("查詢訂單資訊JSON: " + orderJson);
 		writeText(response, orderJson);
-		
+
 	}
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		doPost(request, response);
 	}
-	
+
 	private void writeText(HttpServletResponse response, String outText) throws IOException {
 		response.setContentType(CONTENT_TYPE);
 		PrintWriter out = response.getWriter();
 		out.print(outText);
 		System.out.println("output: " + outText);
 	}
-	
 
 }
