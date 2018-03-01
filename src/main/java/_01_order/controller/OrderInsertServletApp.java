@@ -35,6 +35,8 @@ public class OrderInsertServletApp extends HttpServlet {
 	private static final String CONTENT_TYPE_1 = "text/html; charset=UTF-8";
 	private static final String CONTENT_TYPE_2 = "application/json; charset=UTF-8";
 	JsonObject orderJsonObj = null;
+	JsonObject orderJsonObj_init = null;
+	String orderJsonString_init = null;
 
 	public OrderInsertServletApp() {
 		super();
@@ -43,35 +45,36 @@ public class OrderInsertServletApp extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init();
 
-//		Integer order_user = 1;
-//		String order_note = null;
-//		Date order_time = new Date(System.currentTimeMillis());
-//		Date order_reserve_date = Date.valueOf("2018-02-02");
-//		Integer order_store = 1;
-//		// Integer order_confirm_user = null;
-//		// Date order_confirm_time = new Date(System.currentTimeMillis());
-//		String order_takeout_period = "A";
-//		String order_status = "ordered";
-//		// Date order_finished_time = new Date(System.currentTimeMillis());
-//		Set<ORDER_DETAILS_Extra> detailsEx = new LinkedHashSet<>();
-//		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 1, 1, "扒帶魚", 479, null));
-//		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 2, 2, "公仔麵", 480, null));
-//		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 3, 3, "吸管麵", 2241, null));
-//		
-//		ORDERS insertOrderInit = new ORDERS(null, order_user, order_note, order_time, order_reserve_date, order_store, null,
-//				null, order_takeout_period, order_status, null, null, detailsEx);
-//		
-//		System.out.println("insertOrderInit: " + insertOrderInit.toString());
-//		
-//		Gson gson = new Gson();
-////		Gson gson = new GsonBuilder().create();
-//		
-//		String orderJson = gson.toJson(insertOrderInit);
-//		orderJsonObj = gson.fromJson(orderJson.toString(), JsonObject.class);
-//		orderJsonObj.addProperty("action", "insertOrder");
-////		orderJsonObj.addProperty("order");
-//		System.out.println("orderJsonObj from init: " + orderJsonObj);
-////		System.out.println("orderJson from init: " + new Gson().toJson(insertOrderInit));
+		Integer order_user = 1;
+		String order_note = null;
+		java.util.Date order_time = new java.util.Date(System.currentTimeMillis());
+		Date order_reserve_date = Date.valueOf("2018-02-02");
+		Integer order_store = 1;
+		// Integer order_confirm_user = null;
+		// Date order_confirm_time = new Date(System.currentTimeMillis());
+		String order_takeout_period = "A";
+		String order_status = "ordered";
+		// Date order_finished_time = new Date(System.currentTimeMillis());
+		Set<ORDER_DETAILS_Extra> detailsEx = new LinkedHashSet<>();
+		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 1, 1, "扒帶魚", 479, null));
+		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 2, 2, "公仔麵", 480, null));
+		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 3, 3, "吸管麵", 2241, null));
+		
+		ORDERS insertOrderInit = new ORDERS(null, order_user, order_note, order_time, order_reserve_date, order_store, null,
+				null, order_takeout_period, order_status, null, null, detailsEx);
+		
+		System.out.println("insertOrderInit為: " + insertOrderInit.toString());
+		
+		Gson gson = new Gson();
+//		Gson gson = new GsonBuilder().create();
+		
+		
+		orderJsonObj_init = gson.fromJson(gson.toJson(insertOrderInit).toString(), JsonObject.class);
+		orderJsonObj_init.addProperty("action", "insertOrder");
+		orderJsonObj_init.addProperty("order", gson.toJson(orderJsonObj_init));
+		System.out.println("orderJsonObj:為 " + orderJsonObj_init);
+		
+		orderJsonObj = gson.fromJson(gson.toJson(orderJsonObj_init), JsonObject.class);
 		
 	}
 
@@ -88,12 +91,11 @@ public class OrderInsertServletApp extends HttpServlet {
 		while ((line = br.readLine()) != null) {
 			orderJson.append(line);
 		}
-		System.out.println("input orderJson: " + orderJson);
-
-//		JsonObject orderJsonObj = gson.fromJson(orderJson.toString(), JsonObject.class); // 轉為json物件
+		System.out.println("若有來自BufferredReader資訊先列印出" + orderJson);
 
 		OrdersDao ordersDao = new OrdersDaoImpl();
 		String action = orderJsonObj.get("action").getAsString();
+		System.out.println(action);
 		
 		if (action.equals("getOrderByUser")) {
 			Integer userId = orderJsonObj.get("user_id").getAsInt();
@@ -117,57 +119,14 @@ public class OrderInsertServletApp extends HttpServlet {
 			os.write(food_pic_mdpi);
 		} else if (action.equals("insertOrder")) {
 			System.out.println("測試");
-			String insertOrderJson = orderJsonObj.get("order").getAsString();
-			ORDERS insertOrder = gson.fromJson(insertOrderJson, ORDERS.class);
+			ORDERS insertOrder = gson.fromJson(orderJsonObj.get("order").getAsString(), ORDERS.class);
+			
 			int count = 0;
 			count = ordersDao.insertOrder(insertOrder);
 			writeText(response, insertOrder.toString());
 			System.out.println("成功新增訂單" + insertOrder);
 		}
-
-		// 解析由Web端送來之新增訂單請求資訊
-		// Integer order_user = Integer.parseInt(request.getParameter("order_user"));
-		// String order_note = request.getParameter("order_note");
-		// Date order_time = new Date(System.currentTimeMillis());
-		// Date order_reserve_date =
-		// Date.valueOf(request.getParameter("order_reserve_date"));
-		// Integer order_store = Integer.parseInt(request.getParameter("order_store"));
-		// Integer order_confirm_user =
-		// Integer.parseInt(request.getParameter("order_confirm_user"));
-		// Date order_confirm_time = new Date(System.currentTimeMillis());
-		// String order_takeout_period = request.getParameter("order_takeout_period");
-		// String order_status = request.getParameter("order_status");
-		// Date order_finished_time = new Date(System.currentTimeMillis());
-		// Orders insertOrderBean = new Orders(null, order_user, order_note, order_time,
-		// order_reserve_date, order_store,
-		// order_confirm_user, order_confirm_time, order_takeout_period, order_status,
-		// order_finished_time, null);
-		// System.out.println("insertOrderBean: " + insertOrderBean);
-		//
-		// Integer order_food = Integer.parseInt(request.getParameter("order_food"));
-		// Integer order_quantity =
-		// Integer.parseInt(request.getParameter("order_quantity"));
-		//
-		// Set<Order_details> details = new HashSet<>();
-		// Order_details orderDetailsBean = new Order_details(null, 0, order_food,
-		// order_quantity);
-		// details.add(orderDetailsBean);
-		// insertOrderBean.setDetails(details);
-		// System.out.println("新增訂單資訊: " + insertOrderBean.toString());
-		// String insertOrderJsonStr = gson.toJson(insertOrderBean); // Object to JSON
-		// System.out.println("新增訂單資訊JSON: " + insertOrderJsonStr);
 		
-//		String insertOrderInitJsonStr = gson.toJson(insertOrderInit); // Object to JSON
-
-		// OrdersDao ordersDao = new OrdersDaoImpl();
-		// ordersDao.insertOrder(insertOrderBean);
-//		ordersDao.insertOrder(insertOrderInit);
-//		OrdersServiceImpl orderService = new OrdersServiceImpl();
-//		orderService.processOrder(insertOrderInit);
-//		orderService.findOrderAmount(insertOrderInit);
-
-		// writeText(response, insertOrderJsonStr);
-//		writeText(response, insertOrderInitJsonStr);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
