@@ -21,29 +21,18 @@ label {
 	<p>測試前需先執行_00_init下之CreateUserDate.java新增使用者(user)假資料</p>
 	<p>
 	<Form action="OrderInsertServlet.do" method="POST">
-	測試經由 Servlet init方法送出一筆訂單<br> 
-	<input type="submit" value="確認新增">
-	</Form>
-			
-	<Form action="OrderInsertServletApp.do" method="POST">
-	測試經由 Servlet init方法送出一筆訂單(模擬App)for實際狀況<br>
-	(暫無法使用)<br> 
-	<input type="submit" value="確認新增">
-	</Form>
-	
-	
-	<hr>
-		<label for=""><input type="submit" value="新增訂單"></label>
-	</Form>
-	<p>
-	<Form action="OrderQueryServlet.do" method="POST">
-		<label for="">輸入使用者編號：</label>
-		<input type="text" name="user_id"></input><br>
-		
-		<label for=""><input type="submit" value="查詢訂單"></label>
+		測試經由 Servlet init方法送出一筆訂單<br> <input type="submit" value="確認新增">
 	</Form>
 	<P>
-
+	<Form action="OrderInsertServletApp.do" method="POST">
+		測試經由 Servlet init方法送出一筆訂單(模擬App)for實際狀況<br> (暫無法使用)<br> <input
+			type="submit" value="確認新增">
+	</Form>
+	<P>
+	<Form action="OrderQueryServlet.do" method="POST">
+		測試查詢使用者訂單功能<br> 輸入使用者編號 <input type="text" name="user_id"></input><br>
+		<input type="submit" value="查詢訂單">
+	</Form>
 
 	<hr>
 	<h3>評價功能測試</h3>

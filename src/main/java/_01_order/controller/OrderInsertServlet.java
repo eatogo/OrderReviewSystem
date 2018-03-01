@@ -34,7 +34,7 @@ public class OrderInsertServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String CONTENT_TYPE_1 = "text/html; charset=UTF-8";
 	private static final String CONTENT_TYPE_2 = "application/json; charset=UTF-8";
-	ORDERS insertOrderInit = null;
+	private ORDERS insertOrderInit = null;
 
 	public OrderInsertServlet() {
 		super();
@@ -58,7 +58,7 @@ public class OrderInsertServlet extends HttpServlet {
 		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 2, 2, "公仔麵", 480, null));
 		detailsEx.add(new ORDER_DETAILS_Extra(null, 1, 3, 3, "吸管麵", 2241, null));
 
-		ORDERS insertOrderInit = new ORDERS(null, order_user, order_note, order_time, order_reserve_date, order_store,
+		insertOrderInit = new ORDERS(null, order_user, order_note, order_time, order_reserve_date, order_store,
 				null, null, order_takeout_period, order_status, null, null, detailsEx);
 
 		System.out.println("insertOrderInit: " + insertOrderInit.toString());
