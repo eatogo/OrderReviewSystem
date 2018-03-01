@@ -2,7 +2,7 @@ package _02_review.model.dao;
 
 import java.sql.Timestamp;
 
-import _02_review.model.Reviews;
+import _02_review.model.REVIEWS;
 
 public class ReviewsDaoMain {
 

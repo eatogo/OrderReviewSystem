@@ -1,16 +1,16 @@
 package _01_order.model;
 
-public class Order_details {
-	Integer order_detail_id;
-	Integer order_id;
-	Integer order_food;
-	Integer order_quantity;
+public class ORDER_DETAILS {
+	private Integer order_detail_id;
+	private Integer order_id;
+	private Integer order_food;
+	private Integer order_quantity;
 	
-		public Order_details() {
+		public ORDER_DETAILS() {
 		super();
 	}
 
-	public Order_details(Integer order_detail_id, Integer order_id, Integer order_food, Integer order_quantity) {
+	public ORDER_DETAILS(Integer order_detail_id, Integer order_id, Integer order_food, Integer order_quantity) {
 		super();
 		this.order_detail_id = order_detail_id;
 		this.order_id = order_id;

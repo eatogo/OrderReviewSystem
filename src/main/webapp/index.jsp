@@ -17,52 +17,33 @@ label {
 </head>
 <body>
 
-	<h3>測試前須先手動於資料庫新增使用者表單資料(user)</h3>
 	<h3>訂單功能測試</h3>
+	<p>測試前需先執行_00_init下之CreateUserDate.java新增使用者(user)假資料</p>
 	<p>
 	<Form action="OrderInsertServlet.do" method="POST">
-		<label for="">訂單編號：</label><br> <label for="">下單用戶編號：</label> <input
-			type="text" name="order_user" value="1"> <br> <label
-			for="">訂單備註：</label> <input type="text" name="order_note"
-			value="EX:麵加大"> <br> <label for="">下單時間：</label><br>
-		<label for="">預約取餐日期：</label> <input type="date"
-			name="order_reserve_date" value="2018-02-14">
-		(測試用，暫不提供預約取餐日期) <br> <label for="">店家編號：</label> <input
-			type="text" name="order_store" value="2"> <br> <label
-			for="">接單人員編號：</label> <input type="text" name="order_confirm_user"
-			value="1"> <br> <label for="">接單時間：</label><br> <label
-			for="">取餐時段：</label> <select name="order_takeout_period">
-			<option value="A">A</option>
-			<option value="B">B</option>
-			<option value="C">D</option>
-		</select> <br> <label for="">交易確認：</label> <input type="text"
-			name="order_status" value="ordered"> <br> <label for="">確認時間：</label><br>
-		<label for="">餐點編號1：</label> <input type="text" name="order_food"
-			value="1"> <label for="">餐點數量1：</label> <input type="text"
-			name="order_quantity" value="1"><br> 
+	測試經由 Servlet init方法送出一筆訂單<br> 
+	<input type="submit" value="確認新增">
+	</Form>
 			
-<!-- 		<label for="">餐點編號2：</label> -->
-<!-- 		<input type="text" name="order_food" value="2">  -->
-<!-- 		<label for="">餐點數量2：</label> -->
-<!-- 		<input type="text" name="order_quantity" value="2"><br>  -->
+	<Form action="OrderInsertServletApp.do" method="POST">
+	測試經由 Servlet init方法送出一筆訂單(模擬App)for實際狀況<br>
+	(暫無法使用)<br> 
+	<input type="submit" value="確認新增">
+	</Form>
+	
+	
+	<hr>
 		<label for=""><input type="submit" value="新增訂單"></label>
 	</Form>
 	<p>
 	<Form action="OrderQueryServlet.do" method="POST">
-		<label for="">選擇使用者編號：</label> <select name="user_id">
-			<option value="1">1</option>
-			<option value="2">2</option>
-			<option value="3">3</option>
-		</select><br> <label for=""><input type="submit" value="查詢訂單"></label>
+		<label for="">輸入使用者編號：</label>
+		<input type="text" name="user_id"></input><br>
+		
+		<label for=""><input type="submit" value="查詢訂單"></label>
 	</Form>
 	<P>
-	<Form action="OrderQueryServlet.do" method="POST">
-		<label for="">選擇查詢訂單編號：</label> <select name="order_id">
-			<option value="1">1</option>
-			<option value="2">2</option>
-			<option value="3">3</option>
-		</select><br> <label for=""><input type="submit" value="查詢訂單"></label>
-	</Form>
+
 
 	<hr>
 	<h3>評價功能測試</h3>

@@ -1,7 +1,7 @@
-package _00_utility;
+package _01_global;
 
 public class Db {
-	public final static String URL = "jdbc:mysql://localhost:3306/eatogodb?useSSL=true&useUnicode=yes&characterEncoding=UTF8";
+	public static final  String URL = "jdbc:mysql://localhost:3306/eatogodb?useSSL=true&useUnicode=yes&characterEncoding=UTF8";
 	public static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	public static final String HOST = "localhost";
 	public static final String DB = "eatogodb";

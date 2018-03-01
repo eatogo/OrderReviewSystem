@@ -2,7 +2,7 @@ package _02_review.model;
 
 import java.util.Date;
 
-public class Reviews {
+public class REVIEWS {
 	private Integer review_id;
 	private Integer review_user;
 	private Integer review_order;
@@ -10,11 +10,11 @@ public class Reviews {
 	private Date review_time;
 	private String review_comment;
 	
-	public Reviews() {
+	public REVIEWS() {
 		super();
 	}
 
-	public Reviews(Integer review_id, Integer review_user, Integer review_order, Integer review_food,
+	public REVIEWS(Integer review_id, Integer review_user, Integer review_order, Integer review_food,
 			Date review_time, String review_comment) {
 		super();
 		this.review_id = review_id;
@@ -26,7 +26,7 @@ public class Reviews {
 	}
 	
 	
-	public Reviews(Integer review_id, Integer review_user, Date review_time, String review_comment) {
+	public REVIEWS(Integer review_id, Integer review_user, Date review_time, String review_comment) {
 		super();
 		this.review_id = review_id;
 		this.review_user = review_user;

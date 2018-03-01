@@ -2,17 +2,24 @@ package _01_order.model.dao;
 
 import java.util.List;
 
-import _01_order.model.Orders;
+import _01_order.model.ORDERS;
 
 public interface OrdersDao {
+
+	int insertOrder(ORDERS ob);
+
+	ORDERS getOrderByOrderId(int orderId);
+
+	List<ORDERS> getOrderByUser(int orderUser);
 	
-	int insertOrder(Orders ob);
+	List<Integer> getOrderList(int userId);
 	
-	Orders getOrderById (int order_id);
+	String getFoodPicUrl(int foodId);
 	
-	List<Integer> getOrderList(int user_id);
+	List<String> getFoodPicUrls(int orderId);
 	
-	List<Orders> getUserOrders (int user_id);
+	byte[] getFoodPicMdpiByte(int foodId); //若資料庫儲存圖片時改用
+	
 	
 
 }

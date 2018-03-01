@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import _02_review.model.Reviews;
+import _02_review.model.REVIEWS;
 import _02_review.model.dao.ReviewsDao;
 import _02_review.model.dao.ReviewsDaoImpl;
 
@@ -55,7 +55,7 @@ public class ReviewInsertServlet extends HttpServlet {
 		Integer review_food = Integer.parseInt(request.getParameter("review_food"));
 		Date review_time = new Date(System.currentTimeMillis());
 		String review_comment = request.getParameter("review_comment");
-		Reviews insertReviewBean = new Reviews(null, review_user, review_order, review_food, review_time,
+		REVIEWS insertReviewBean = new REVIEWS(null, review_user, review_order, review_food, review_time,
 				review_comment);
 		System.out.println("新增評價資訊: " + insertReviewBean);
 		String insertReviewJsonStr = gson.toJson(insertReviewBean); // Object to JSON

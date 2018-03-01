@@ -4,12 +4,12 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class Orders {
+public class ORDERS {
 	private Integer order_id;
 	private Integer order_user;
 	private String order_note;
 	private Date order_time;
-//	private Date order_reserve_date;
+	// private Date order_reserve_date;
 	private java.sql.Date order_reserve_date;
 	private Integer order_store;
 	private Integer order_confirm_user;
@@ -17,15 +17,17 @@ public class Orders {
 	private String order_takeout_period;
 	private String order_status;
 	private Date order_finished_time;
-	private Set<Order_details> details = new LinkedHashSet<>();
-	
-	public Orders() {
+	private Set<ORDER_DETAILS> details = new LinkedHashSet<>();
+	private Set<ORDER_DETAILS_Extra> detailsExtra = new LinkedHashSet<>();
+
+	public ORDERS() {
 		super();
 	}
 
-	public Orders(Integer order_id, Integer order_user, String order_note, Date order_time,
+	public ORDERS(Integer order_id, Integer order_user, String order_note, Date order_time,
 			java.sql.Date order_reserve_date, Integer order_store, Integer order_confirm_user, Date order_confirm_time,
-			String order_takeout_period, String order_status, Date order_finished_time, Set<Order_details> details) {
+			String order_takeout_period, String order_status, Date order_finished_time, Set<ORDER_DETAILS> details,
+			Set<ORDER_DETAILS_Extra> detailsExtra) {
 		super();
 		this.order_id = order_id;
 		this.order_user = order_user;
@@ -39,6 +41,7 @@ public class Orders {
 		this.order_status = order_status;
 		this.order_finished_time = order_finished_time;
 		this.details = details;
+		this.detailsExtra = detailsExtra;
 	}
 
 	public Integer getOrder_id() {
@@ -129,21 +132,30 @@ public class Orders {
 		this.order_finished_time = order_finished_time;
 	}
 
-	public Set<Order_details> getDetails() {
+	public Set<ORDER_DETAILS> getDetails() {
 		return details;
 	}
 
-	public void setDetails(Set<Order_details> details) {
+	public void setDetails(Set<ORDER_DETAILS> details) {
 		this.details = details;
+	}
+
+	public Set<ORDER_DETAILS_Extra> getDetailsExtra() {
+		return detailsExtra;
+	}
+
+	public void setDetailsExtra(Set<ORDER_DETAILS_Extra> detailsExtra) {
+		this.detailsExtra = detailsExtra;
 	}
 
 	@Override
 	public String toString() {
-		return "OrderBean [order_id=" + order_id + ", order_user=" + order_user + ", order_note=" + order_note
+		return "ORDERS [order_id=" + order_id + ", order_user=" + order_user + ", order_note=" + order_note
 				+ ", order_time=" + order_time + ", order_reserve_date=" + order_reserve_date + ", order_store="
 				+ order_store + ", order_confirm_user=" + order_confirm_user + ", order_confirm_time="
 				+ order_confirm_time + ", order_takeout_period=" + order_takeout_period + ", order_status="
-				+ order_status + ", order_finished_time=" + order_finished_time + ", details=" + details + "]";
+				+ order_status + ", order_finished_time=" + order_finished_time + ", details=" + details
+				+ ", detailsExtra=" + detailsExtra + "]";
 	}
-
+	
 }

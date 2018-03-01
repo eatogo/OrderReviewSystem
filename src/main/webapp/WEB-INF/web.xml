@@ -4,7 +4,7 @@
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
-   <resource-ref>
+  <resource-ref>
     <description>Eatogo DB JNDI</description>
     <res-ref-name>jdbc/eatogodb</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>

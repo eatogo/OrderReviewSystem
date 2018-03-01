@@ -9,18 +9,17 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import _00_utility.Db;
-import _01_order.model.Order_details;
-import _01_order.model.Orders;
+import _01_global.Db;
+import _01_order.model.FOODS;
+import _01_order.model.ORDERS;
+import _01_order.model.ORDER_DETAILS_Extra;
 
 public class OrdersDaoImpl implements OrdersDao {
 	Connection conn;
@@ -46,46 +45,50 @@ public class OrdersDaoImpl implements OrdersDao {
 	}
 
 	@Override
-	public int insertOrder(Orders ob) {
+	public int insertOrder(ORDERS ob) {
 		int n = 0;
+		// String insertOrderSql = "INSERT INTO ORDERS ("
+		// + " order_id, order_user, order_note, order_time, order_reserve_date,"
+		// + " order_store, order_confirm_user, order_confirm_time,
+		// order_takeout_period,"
+		// + " order_status, order_finished_time)" + " values(null, ?, ?, ?, ?, ?, ?, ?,
+		// ?, ?, ?)";
 		String insertOrderSql = "INSERT INTO ORDERS ("
-				+ " order_id, order_user, order_note, order_time, order_reserve_date,"
-				+ " order_store, order_confirm_user, order_confirm_time, order_takeout_period,"
-				+ " order_status, order_finished_time)" + " values(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ " order_user, order_note, order_time, order_reserve_date, order_store,"
+				+ " order_takeout_period, order_status) " + " values(?, ?, ?, ?, ?, ?, ?)";
+
 		String insertOrderDetailSql = "INSERT INTO ORDER_DETAILS ("
-				+ " order_detail_id, order_id, order_food, order_quantity)" + " values(null, ?, ?, ?)";
+				+ " order_detail_id, order_id, order_food, order_quantity)" + " values(null, ?, ?, ?);";
 
 		ResultSet generatedKeys = null;
 
 		try (Connection conn = ds.getConnection();
 				// Connection conn = DriverManager.getConnection(Db.URLALL); //
-				// 改為DataSourece方式連線
-				PreparedStatement ps = conn.prepareStatement(insertOrderSql, Statement.RETURN_GENERATED_KEYS);) {
+				// DriverManager連線方式使用
+				PreparedStatement ps1 = conn.prepareStatement(insertOrderSql, Statement.RETURN_GENERATED_KEYS);) {
 
-			ps.setInt(1, ob.getOrder_user());
-			ps.setString(2, ob.getOrder_note());
-			ps.setTimestamp(3, new Timestamp(ob.getOrder_time().getTime()));
-			ps.setDate(4, ob.getOrder_reserve_date());
-			ps.setInt(5, ob.getOrder_store());
-			ps.setInt(6, ob.getOrder_confirm_user());
-			ps.setTimestamp(7, new Timestamp(ob.getOrder_confirm_time().getTime()));
-			ps.setString(8, ob.getOrder_takeout_period());
-			ps.setString(9, ob.getOrder_status());
-			ps.setTimestamp(10, new Timestamp(ob.getOrder_finished_time().getTime()));
-			n = ps.executeUpdate();
+			ps1.setInt(1, ob.getOrder_user());
+			ps1.setString(2, ob.getOrder_note());
+			ps1.setTimestamp(3, new Timestamp(ob.getOrder_time().getTime()));
+			ps1.setDate(4, ob.getOrder_reserve_date());
+			ps1.setInt(5, ob.getOrder_store());
+			ps1.setString(6, ob.getOrder_takeout_period());
+			ps1.setString(7, ob.getOrder_status());
+			n = ps1.executeUpdate();
 			System.out.println("成功新增一筆訂單");
 
 			int id = 0;
-			generatedKeys = ps.getGeneratedKeys();
+			generatedKeys = ps1.getGeneratedKeys();
 			if (generatedKeys.next()) {
 				id = generatedKeys.getInt(1);
 			} else {
 				throw new SQLException("Creating Order failed, no generated key obtained.");
 			}
 
-			Set<Order_details> details = ob.getDetails();
+			// Set<ORDER_DETAILS> details = ob.getDetails();
+			Set<ORDER_DETAILS_Extra> detailsEx = ob.getDetailsExtra();
 			try (PreparedStatement ps2 = conn.prepareStatement(insertOrderDetailSql);) {
-				for (Order_details odb : details) {
+				for (ORDER_DETAILS_Extra odb : detailsEx) {
 					ps2.setInt(1, id);
 					ps2.setInt(2, odb.getOrder_food());
 					ps2.setInt(3, odb.getOrder_quantity());
@@ -102,24 +105,33 @@ public class OrdersDaoImpl implements OrdersDao {
 
 	@Override
 	// 取得單筆訂單與明細
-	public Orders getOrderById(int order_id) {
-		Orders ob = null;
-		Order_details odb = null;
-		Set<Order_details> set = null;
+	public ORDERS getOrderByOrderId(int orderId) {
+		ORDERS ob = null;
+		ORDER_DETAILS_Extra odb_ex = null;
+		// ORDER_DETAILS odb = null;
+		Set<ORDER_DETAILS_Extra> odb_ex_set = null;
+		// Set<ORDER_DETAILS> odb_set = null;
 		String getOrdersSql = "SELECT * FROM ORDERS WHERE order_id = ?";
-		String getOrderDetailsSql = "SELECT * FROM ORDER_DETAILS WHERE order_id = ?";
-		String getOrderWithPic = "SELECT od.*, f.food_name, f.food_price, f.food_pic_mdpi"
-				+ " FROM ORDER_DETAILS od JOIN FOODS f ON od.order_food = f.food_id " + " WHERE od.order_id = ? ";
+		// String getOrderDetailsSql = "SELECT * FROM ORDER_DETAILS WHERE order_id = ?";
+		String getOrderDetailsExSql = "SELECT od.*, f.food_name, f.food_price"
+				+ " FROM ORDER_DETAILS od JOIN FOODS f ON od.order_food = f.food_id " + " WHERE od.order_id = ?; ";
+		// String getOrderDetailExPicSql = "SELECT od.*, f.food_name, f.food_price,
+		// f.food_pic_mdpi"
+		// + " FROM ORDER_DETAILS od JOIN FOODS f ON od.order_food = f.food_id " + "
+		// WHERE od.order_id = ?; ";
 
 		try (Connection conn = ds.getConnection();
-				// Connection conn = DriverManager.getConnection(Db.URLALL); //
-				// 改為DataSourece方式連線
+				// Connection conn = DriverManager.getConnection(Db.URLALL); DriverManager連線方式使用
 				PreparedStatement ps1 = conn.prepareStatement(getOrdersSql);
-				PreparedStatement ps2 = conn.prepareStatement(getOrderDetailsSql);) {
-			ps1.setInt(1, order_id);
+				PreparedStatement ps2 = conn.prepareStatement(getOrderDetailsExSql);
+		// PreparedStatement ps2 = conn.prepareStatement(getOrderDetailExPicSql); //
+		// 包含讀取圖片
+
+		) {
+			ps1.setInt(1, orderId);
 			try (ResultSet rs1 = ps1.executeQuery();) {
 				if (rs1.next()) {
-					Integer orderId = rs1.getInt("order_id");
+					Integer order_id = rs1.getInt("order_id");
 					Integer order_user = rs1.getInt("order_user");
 					String order_note = rs1.getString("order_note");
 					Timestamp order_time = rs1.getTimestamp("order_time");
@@ -130,23 +142,32 @@ public class OrdersDaoImpl implements OrdersDao {
 					String order_takeout_period = rs1.getString("order_takeout_period");
 					String order_status = rs1.getString("order_status");
 					Timestamp order_finished_time = rs1.getTimestamp("order_finished_time");
-					ob = new Orders(orderId, order_user, order_note, order_time, order_reserve_date, order_store,
+					ob = new ORDERS(order_id, order_user, order_note, order_time, order_reserve_date, order_store,
 							order_confirm_user, order_confirm_time, order_takeout_period, order_status,
-							order_finished_time, null);
+							order_finished_time, null, null);
 				}
 			}
-			ps2.setInt(1, order_id);
+			ps2.setInt(1, orderId);
 			try (ResultSet rs2 = ps2.executeQuery();) {
-				set = new HashSet<>();
+				odb_ex_set = new HashSet<>();
 				while (rs2.next()) {
 					Integer order_detail_id = rs2.getInt("order_detail_id");
-					Integer orderId = rs2.getInt("order_id");
+					Integer order_id = rs2.getInt("order_id");
 					Integer order_food = rs2.getInt("order_food");
 					Integer order_quantity = rs2.getInt("order_quantity");
-					odb = new Order_details(order_detail_id, orderId, order_food, order_quantity);
-					set.add(odb);
+
+					String food_name = rs2.getString("food_name");
+					Integer food_price = rs2.getInt("food_price");
+
+					odb_ex = new ORDER_DETAILS_Extra(order_detail_id, order_id, order_food, order_quantity, food_name,
+							food_price, null);
+					// odb = new ORDER_DETAILS(order_detail_id, order_id, order_food,
+					// order_quantity);
+
+					System.out.println("odb_ex:" + odb_ex.toString());
+					odb_ex_set.add(odb_ex);
 				}
-				ob.setDetails(set);
+				ob.setDetailsExtra(odb_ex_set);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -156,39 +177,33 @@ public class OrdersDaoImpl implements OrdersDao {
 
 	// 取得使用者多筆訂單清單
 	@Override
-	public List<Orders> getUserOrders(int user_id) {
-		String getOrderListSql = "SELECT order_id FROM ORDERS WHERE order_user = ? ORDER BY order_time desc ";
-		List<Orders> userOrders = new ArrayList<>();
+	public List<ORDERS> getOrderByUser(int userId) {
+		String getOrderListSql = "SELECT order_id FROM ORDERS WHERE order_user = ? ORDER BY order_time desc;";
+		List<ORDERS> orderByUserList = new ArrayList<>();
 
 		try (Connection conn = ds.getConnection();
-				// Connection conn = DriverManager.getConnection(Db.URLALL); //
-				// 改為DataSourece方式連線
+				// Connection conn = DriverManager.getConnection(Db.URLALL); DriverManager連線方式使用
 				PreparedStatement ps = conn.prepareStatement(getOrderListSql);) {
-			ps.setInt(1, user_id); // order_user待規劃 order_user取得程序，及App端登入的取得方式。
+			ps.setInt(1, userId); // 待規劃 orderUser取得程序，及App端登入的取得方式。
 			try (ResultSet rs = ps.executeQuery();) {
 				while (rs.next()) {
-					Integer order_id = rs.getInt("order_id");
-					userOrders.add(getOrderById(order_id));
+					Integer orderId = rs.getInt("order_id");
+					orderByUserList.add(getOrderByOrderId(orderId));
 				}
 			}
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		return userOrders;
+		return orderByUserList;
 	}
 
-	// 計算訂單金額
-	// public double findDetailAmount(Order_details odb) {
-	// double subtotal = odb.getOrder_quantity() *
-	// }
-
-	// 取得多筆訂單清單
+	// 取得用戶訂單清單
 	@Override
-	public List<Integer> getOrderList(int user_id) {
+	public List<Integer> getOrderList(int userId) {
 		List<Integer> orderList = new ArrayList<>();
-		String OrderListSql = "SELECT * FROM ORDERS WHERE order_user = ?";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(OrderListSql);) {
-			ps.setInt(1, user_id);
+		String getOrderListSql = "SELECT * FROM ORDERS WHERE order_user = ?;";
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(getOrderListSql);) {
+			ps.setInt(1, userId);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				Integer order_id = rs.getInt("order_id");
@@ -197,8 +212,123 @@ public class OrdersDaoImpl implements OrdersDao {
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		System.out.println("清單" + orderList);
+		System.out.println("用戶訂單清單" + orderList);
 		return orderList;
-
 	}
+
+	// 變更交易確認狀態
+	public int updateOrderStatus_0(ORDERS order) {
+		String updateOrderStatus_0 = "UPDATE ORDERS SET" + " order_confirm_user = " + order.getOrder_confirm_user()
+				+ ", order_confirm_time = " + order.getOrder_confirm_time() + ", order_status = "
+				+ order.getOrder_status() + ", order_finished_time = " + order.getOrder_finished_time()
+				+ " WHERE order_id = " + order.getOrder_id();
+		int count = 0;
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(updateOrderStatus_0);) {
+			count = ps.executeUpdate();
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return count;
+	}
+
+	// 變更交易確認狀態
+	public int updateOrderStatus_1(ORDERS order) {
+		String updateOrderStatus_1 = "UPDATE ORDERS SET" + ", order_status = " + order.getOrder_status()
+				+ ", order_finished_time = " + order.getOrder_finished_time() + " WHERE order_id = "
+				+ order.getOrder_id();
+		int count = 0;
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(updateOrderStatus_1);) {
+			count = ps.executeUpdate();
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return count;
+	}
+
+	// 取得Blob格式餐點圖片food_pic_mdpi
+	public byte[] getFoodPic(Integer food_id) {
+		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id = ?;";
+		byte[] food_pic_mdpi = null;
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
+			ps.setInt(1, food_id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				food_pic_mdpi = rs.getBytes("food_pic_mdpi");
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return food_pic_mdpi;
+	}
+
+	// 取得餐點圖片連結food_pic_mdpi
+	public FOODS getFoods(Integer food_id) {
+		String sql = "SELECT food_name, food_price FROM FOODS WHERE food_id = ?;";
+		FOODS foods = null;
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
+			ps.setInt(1, food_id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				String food_name = rs.getString("food_name");
+				Integer food_price = rs.getInt("food_price");
+				foods = new FOODS(food_id, food_name, food_price, null, null, null, null, null, null, null, null, null,
+						null);
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return foods;
+	}
+
+	
+	@Override
+	public String getFoodPicUrl(int foodId) {
+		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id = ?;";
+		String foodPicUrl = null;
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
+			ps.setInt(1, foodId);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				foodPicUrl = rs.getString(1);
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return foodPicUrl;
+	}
+	
+	@Override
+	public List<String> getFoodPicUrls(int orderId){
+		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id IN (SELECT order_food FROM ORDER_DETAILS WHERE order_id = 6);";
+		List<String> foodPicUrls = new ArrayList<String>();
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
+			ps.setInt(1, orderId);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				String food_pic_mdpi = rs.getString(1);
+				foodPicUrls.add(food_pic_mdpi);
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return foodPicUrls;
+	}
+	
+	// 若資料庫儲存圖片時使用
+	@Override
+	public byte[] getFoodPicMdpiByte(int foodId) {
+		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id = ?;";
+		byte[] foodPicMdpiByte = null;
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
+			ps.setInt(1, foodId);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				foodPicMdpiByte = rs.getBytes(1);
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		return foodPicMdpiByte;
+	}
+
 }

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
-import _02_review.model.Reviews;
+import _02_review.model.REVIEWS;
 import _02_review.model.dao.ReviewsDao;
 import _02_review.model.dao.ReviewsDaoImpl;
 
@@ -43,7 +43,7 @@ public class ReviewQueryServlet extends HttpServlet {
 		 
 		Integer review_food = Integer.parseInt(request.getParameter("review_food"));
 		ReviewsDao reviewsDao = new ReviewsDaoImpl();
-		List<Reviews> reviewsListBean = reviewsDao.getReviewsByFood(review_food);
+		List<REVIEWS> reviewsListBean = reviewsDao.getReviewsByFood(review_food);
 		System.out.println("查詢評價資訊: " + reviewsListBean.toString());
 		String reviewsListJson = gson.toJson(reviewsListBean); // Object to JSON
 		System.out.println("查詢評價資訊JSON: " + reviewsListJson);
