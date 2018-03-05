@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.naming.Context;
@@ -31,7 +33,6 @@ public class OrdersServiceImpl {
 	public void processOrder(ORDERS ob) {
 		Set<ORDER_DETAILS_Extra> detailsEx = ob.getDetailsExtra();
 		Integer order_id = ob.getOrder_id();
-
 		for (ORDER_DETAILS_Extra odb : detailsEx) {
 			processOrderDetail(odb, order_id);
 		}
@@ -77,13 +78,41 @@ public class OrdersServiceImpl {
 		// OrdersDao orderDao = new OrdersDaoImpl();
 		// ORDERS obEx = orderDao.getOrderById(orderId);
 		double total = 0;
+		// double price[] = 0;
 		// Set<ORDER_DETAILS_Extra> odEx = obEx.getDetailsExtra();
-		Set<ORDER_DETAILS_Extra> odEx = ob.getDetailsExtra();
-		for (ORDER_DETAILS_Extra odbEx : odEx) {
-			double subtotal = odbEx.getOrder_quantity() * odbEx.getFood_price();
+		Set<ORDER_DETAILS_Extra> odExArr = ob.getDetailsExtra();
+		for (ORDER_DETAILS_Extra odEx : odExArr) {
+			double subtotal = odEx.getOrder_quantity() * odEx.getFood_price();
 			total += subtotal;
 		}
 		System.out.println("總金額: " + total);
 		return total;
 	}
+
+	
+	private Map<Integer, ORDER_DETAILS_Extra> cart = new LinkedHashMap<>();
+
+	public double getSubtotal() {
+		double subTotal = 0;
+		Set<Integer> set = cart.keySet();
+		for (int n : set) {
+			String food_name = cart.get(n).getFood_name();
+			double food_price = cart.get(n).getFood_price();
+			Integer order_quantity = cart.get(n).getOrder_quantity();
+			subTotal += food_price * order_quantity;
+		}
+		return subTotal;
+	}
+
+	//未完成
+	public void listDetails() {
+		Set<Integer> set = cart.keySet();
+		for (Integer k : set) {
+			System.out.printf("food_name=, order_quamtity=, food_price=\n", k, cart.get(k).getFood_name(),
+					cart.get(k).getOrder_quantity(), cart.get(k).getFood_price());
+		}
+	}
+	
+	
+
 }

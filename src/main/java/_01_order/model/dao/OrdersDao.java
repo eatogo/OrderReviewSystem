@@ -12,7 +12,7 @@ public interface OrdersDao {
 
 	List<ORDERS> getOrderByUser(int orderUser);
 	
-	List<Integer> getOrderList(int userId);
+	List<Integer> getOrdersByUser(int userId);
 	
 	String getFoodPicUrl(int foodId);
 	

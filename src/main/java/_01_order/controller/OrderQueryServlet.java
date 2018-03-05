@@ -57,7 +57,7 @@ public class OrderQueryServlet extends HttpServlet {
 		// String reviewFood = request.getParameter("review_food");
 		Integer userId = Integer.parseInt(request.getParameter("user_id"));
 		List<ORDERS> orderByUser = ordersDao.getOrderByUser(userId);
-		ordersDao.getOrderList(userId);
+		ordersDao.getOrdersByUser(userId);
 		System.out.println("使用者訂單明細:" + orderByUser.toString());
 		String orderByUserJson = gson.toJson(orderByUser); // Object to JSON
 		writeText(response, orderByUserJson);

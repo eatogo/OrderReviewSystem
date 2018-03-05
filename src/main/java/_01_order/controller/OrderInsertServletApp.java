@@ -69,7 +69,8 @@ public class OrderInsertServletApp extends HttpServlet {
 //		Gson gson = new GsonBuilder().create();
 		
 		
-		orderJsonObj_init = gson.fromJson(gson.toJson(insertOrderInit).toString(), JsonObject.class);
+//		orderJsonObj_init = gson.fromJson(gson.toJson(insertOrderInit).toString(), JsonObject.class);
+		orderJsonObj_init = new Gson().fromJson(gson.toJson(insertOrderInit).toString(), JsonObject.class);
 		orderJsonObj_init.addProperty("action", "insertOrder");
 		orderJsonObj_init.addProperty("order", gson.toJson(orderJsonObj_init));
 		System.out.println("orderJsonObj:為 " + orderJsonObj_init);
@@ -82,11 +83,11 @@ public class OrderInsertServletApp extends HttpServlet {
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 
-		// 以下為接收App端送來新增訂單請求資訊準備(json格式)，未完成
+		// 以下為接收App端送來之新增訂單請求準備(json格式)
 
 		Gson gson = new Gson();
 		BufferedReader br = request.getReader();
-		StringBuilder orderJson = new StringBuilder(); // 先假設為存入
+		StringBuilder orderJson = new StringBuilder();
 		String line = null;
 		while ((line = br.readLine()) != null) {
 			orderJson.append(line);
@@ -95,7 +96,6 @@ public class OrderInsertServletApp extends HttpServlet {
 
 		OrdersDao ordersDao = new OrdersDaoImpl();
 		String action = orderJsonObj.get("action").getAsString();
-		System.out.println(action);
 		
 		if (action.equals("getOrderByUser")) {
 			Integer userId = orderJsonObj.get("user_id").getAsInt();
@@ -118,15 +118,15 @@ public class OrderInsertServletApp extends HttpServlet {
 			}
 			os.write(food_pic_mdpi);
 		} else if (action.equals("insertOrder")) {
-			System.out.println("測試");
 			ORDERS insertOrder = gson.fromJson(orderJsonObj.get("order").getAsString(), ORDERS.class);
-			
 			int count = 0;
 			count = ordersDao.insertOrder(insertOrder);
+			OrdersServiceImpl orderService = new OrdersServiceImpl();
+			orderService.processOrder(insertOrder);
+			orderService.findOrderAmount(insertOrder);
+
 			writeText(response, insertOrder.toString());
-			System.out.println("成功新增訂單" + insertOrder);
 		}
-		
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
