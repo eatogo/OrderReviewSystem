@@ -30,7 +30,11 @@ label {
 	</Form>
 	<P>
 	<Form action="OrderQueryServlet.do" method="POST">
-		測試查詢使用者訂單功能<br> 輸入使用者編號 <input type="text" name="user_id"></input><br>
+		查詢顧客訂單<br> 輸入顧客編號 <input type="text" name="user_id"></input><br>
+		<input type="submit" value="查詢訂單">
+	</Form>
+		<Form action="OrderQueryServlet.do" method="POST">
+		查詢店家訂單<br> 輸入店家編號 <input type="text" name="store_id"></input><br>
 		<input type="submit" value="查詢訂單">
 	</Form>
 

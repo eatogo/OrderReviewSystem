@@ -56,11 +56,15 @@ public class OrderQueryServlet extends HttpServlet {
 		// 尚未處理，查無訂單之回應
 		// String reviewFood = request.getParameter("review_food");
 		Integer userId = Integer.parseInt(request.getParameter("user_id"));
-		List<ORDERS> orderByUser = ordersDao.getOrderByUser(userId);
-		ordersDao.getOrdersByUser(userId);
-		System.out.println("使用者訂單明細:" + orderByUser.toString());
-		String orderByUserJson = gson.toJson(orderByUser); // Object to JSON
-		writeText(response, orderByUserJson);
+//		Integer storeId = Integer.parseInt(request.getParameter("store_id"));
+		List<ORDERS> ordersByUser = ordersDao.getOrdersDetailByUser(userId);
+//		List<ORDERS> ordersBystore = ordersDao.getOrdersDeatilByStore(storeId);
+//		ordersDao.getOrdersDetailByUser(userId);
+		System.out.println("使用者訂單明細:" + ordersByUser.toString());
+		String ordersByUserJson = gson.toJson(ordersByUser); // Object to JSON
+//		String ordersByStoreJson = gson.toJson(ordersBystore); // Object to JSON
+		writeText(response, ordersByUserJson);
+//		writeText(response, ordersByStoreJson);
 		
 //		Integer order_id = Integer.parseInt(request.getParameter("order_id"));
 //		Orders orderBean = ordersDao.getOrderById(order_id);

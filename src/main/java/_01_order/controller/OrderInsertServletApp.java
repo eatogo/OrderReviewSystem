@@ -99,9 +99,9 @@ public class OrderInsertServletApp extends HttpServlet {
 		
 		if (action.equals("getOrderByUser")) {
 			Integer userId = orderJsonObj.get("user_id").getAsInt();
-			List<ORDERS> orderList = ordersDao.getOrderByUser(userId);
-			writeText(response, gson.toJson(orderList));
-			System.out.println("查詢訂單資訊: " + orderList.toString());
+			List<ORDERS> ordersDetail = ordersDao.getOrdersDetailByUser(userId);
+			writeText(response, gson.toJson(ordersDetail));
+			System.out.println("查詢訂單資訊: " + ordersDetail.toString());
 		} else if (action.equals("getFoodPicUrls")) {
 			Integer orderId = orderJsonObj.get("order_id").getAsInt();
 			List<String> foodPicUrls = ordersDao.getFoodPicUrls(orderId);

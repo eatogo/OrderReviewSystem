@@ -97,7 +97,7 @@ public class OrdersDaoImpl implements OrdersDao {
 				}
 				System.out.println("成功新增一筆訂單明細");
 				for (ORDER_DETAILS_Extra odb_ex1 : detailsEx) {
-					System.out.println(odb_ex1.toString()); //Console印出寫入資訊
+					System.out.println(odb_ex1.toString()); // Console印出寫入資訊
 				}
 			}
 		} catch (SQLException ex) {
@@ -178,30 +178,50 @@ public class OrdersDaoImpl implements OrdersDao {
 		return ob;
 	}
 
-	// 取得使用者多筆訂單清單
+	// 取得使用者多筆訂單明細
 	@Override
-	public List<ORDERS> getOrderByUser(int userId) {
-		String getOrderListSql = "SELECT order_id FROM ORDERS WHERE order_user = ? ORDER BY order_time desc;";
-		List<ORDERS> orderByUserList = new ArrayList<>();
+	public List<ORDERS> getOrdersDetailByUser(int userId) {
+		List<ORDERS> orderDetail = new ArrayList<>();
+		String getOrdersByUserSql = "SELECT order_id FROM ORDERS WHERE order_user = ? ORDER BY order_time desc;";
 
 		try (Connection conn = ds.getConnection();
 				// Connection conn = DriverManager.getConnection(Db.URLALL); DriverManager連線方式使用
-				PreparedStatement ps = conn.prepareStatement(getOrderListSql);) {
+				PreparedStatement ps = conn.prepareStatement(getOrdersByUserSql);) {
 			ps.setInt(1, userId); // 待規劃 orderUser取得程序，及App端登入的取得方式。
 			try (ResultSet rs = ps.executeQuery();) {
 				while (rs.next()) {
 					Integer orderId = rs.getInt("order_id");
-					orderByUserList.add(getOrderByOrderId(orderId));
+					orderDetail.add(getOrderByOrderId(orderId));
 				}
 			}
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		return orderByUserList;
+		return orderDetail;
 	}
-	
-	//取得店家訂單
-	public List<Integer> getOrderByStore (int orderStore){
+
+	// 取得用戶訂單列表
+	@Override
+	public List<Integer> getOrderListByUser(int userId) {
+		List<Integer> userOrders = new ArrayList<>();
+		String getOrdersByUserSql = "SELECT * FROM ORDERS WHERE order_user = ?;";
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(getOrdersByUserSql);) {
+			ps.setInt(1, userId);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Integer order_id = rs.getInt("order_id");
+				userOrders.add(order_id);
+			}
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+		System.out.println("用戶訂單清單" + userOrders);
+		return userOrders;
+	}
+
+	// 取得店家訂單列表
+	@Override
+	public List<Integer> getOrderListByStore(int orderStore) {
 		List<Integer> storeOrders = new ArrayList<>();
 		String getOrdersByStoreSql = "SELECT * FROM ORDERS WHERE order_store = ?";
 		String sql_2 = "";
@@ -218,26 +238,26 @@ public class OrdersDaoImpl implements OrdersDao {
 		System.out.println("店家訂單清單" + storeOrders);
 		return storeOrders;
 	}
-		
-	
 
-	// 取得用戶訂單清單
 	@Override
-	public List<Integer> getOrdersByUser(int userId) {
-		List<Integer> userOrders = new ArrayList<>();
-		String getOrdersByUserSql = "SELECT * FROM ORDERS WHERE order_user = ?;";
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(getOrdersByUserSql);) {
-			ps.setInt(1, userId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				Integer order_id = rs.getInt("order_id");
-				userOrders.add(order_id);
+	public List<ORDERS> getOrdersDeatilByStore(int storeId) {
+		List<ORDERS> orderDetail = new ArrayList<>();
+		String getOrdersByStore = "SELECT order_id FROM ORDERS WHERE order_store = ? ORDER BY order_time desc;";
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(getOrdersByStore);) {
+			ps.setInt(1, storeId); 
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					Integer orderId = rs.getInt("order_id");
+					orderDetail.add(getOrderByOrderId(orderId));
+				}
 			}
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		System.out.println("用戶訂單清單" + userOrders);
-		return userOrders;
+		
+
+		return orderDetail;
 	}
 
 	// 變更交易確認狀態

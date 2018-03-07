@@ -10,9 +10,14 @@ public interface OrdersDao {
 
 	ORDERS getOrderByOrderId(int orderId);
 
-	List<ORDERS> getOrderByUser(int orderUser);
+	List<ORDERS> getOrdersDetailByUser(int orderUser);
 	
-	List<Integer> getOrdersByUser(int userId);
+	List<ORDERS> getOrdersDeatilByStore(int storeId);
+	
+	List<Integer> getOrderListByUser(int userId);
+	
+	
+	List<Integer> getOrderListByStore (int orderStore);
 	
 	String getFoodPicUrl(int foodId);
 	
