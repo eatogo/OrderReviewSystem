@@ -30,7 +30,13 @@ public class OrderQueryByUser extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		doGet(request, response);
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
+
 		Gson gson = new Gson();
 
 		// 以下為接收App端送來查詢訂單請求資訊準備(json格式)，未完成
@@ -72,12 +78,7 @@ public class OrderQueryByUser extends HttpServlet {
 //		String orderJson = gson.toJson(orderBean); // Object to JSON
 //		System.out.println("查詢訂單資訊JSON: " + orderJson);
 //		writeText(response, orderJson);
-
-	}
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doPost(request, response);
+		
 	}
 
 	private void writeText(HttpServletResponse response, String outText) throws IOException {

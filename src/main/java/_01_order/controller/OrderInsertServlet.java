@@ -22,6 +22,12 @@ import _01_order.model.ORDER_DETAILS_Extra;
 import _01_order.model.dao.OrdersDao;
 import _01_order.model.dao.OrdersDaoImpl;
 
+/**
+ * @author Jason
+ * 此Servlet目前以無使用
+ *
+ */
+
 @WebServlet("/OrderInsertServlet.do")
 public class OrderInsertServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -29,13 +35,6 @@ public class OrderInsertServlet extends HttpServlet {
 	private static final String CONTENT_TYPE_2 = "application/json; charset=UTF-8";
 	private ORDERS insertOrderInit = null;
 
-	public OrderInsertServlet() {
-		super();
-	}
-
-	public void init(ServletConfig config) throws ServletException {
-		super.init();
-	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

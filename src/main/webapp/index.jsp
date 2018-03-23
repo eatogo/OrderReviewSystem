@@ -29,12 +29,12 @@ label {
 			type="submit" value="確認新增">
 	</Form>
 	<P>
-	<Form action="OrderQueryByUser.do" method="POST">
+	<Form action="OrderQueryByUser.do" method="GET">
 		查詢顧客訂單<br> 輸入顧客編號 <input type="text" name="user_id"></input><br>
 		<input type="submit" value="查詢訂單">
 	</Form>
 	<P>
-	<Form action="OrderQueryByStore.do" method="POST">
+	<Form action="OrderQueryByStore.do" method="GET">
 		查詢店家訂單<br> 輸入店家編號 <input type="text" name="store_id"></input><br>
 		<input type="submit" value="查詢訂單">
 	</Form>

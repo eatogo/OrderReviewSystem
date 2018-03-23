@@ -27,23 +27,6 @@ public class OrderQueryByStore extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		Gson gson = new Gson();
 
-		// 以下為接收App端送來查詢訂單請求資訊準備(json格式)，未完成
-//		BufferedReader br = request.getReader();
-//		StringBuilder insertOrderJson = new StringBuilder();
-//		String line = null;
-//		while ((line = br.readLine()) != null) {
-//			insertOrderJson.append(line);
-//		}
-//		System.out.println("input: " + insertOrderJson);
-//		JsonObject insertOrderJsonObj = gson.fromJson(insertOrderJson.toString(),
-//				 JsonObject.class); // 轉為json物件
-//		String action = insertOrderJsonObj.get("action").getAsString();
-//		if (action.equals("getOrdersList")) {
-//			OrdersDao ordersDao = new OrdersDaoImpl();
-//			List<Orders> orderList = ordersDao.getOrderList();
-//			System.out.println("查詢訂單資訊: " + orderList.toString());
-//		}
-		
 		OrdersDao ordersDao = new OrdersDaoImpl();
 		Integer orderId = Integer.parseInt(request.getParameter("store_id"));
 		List<ORDERS> ordersByStore = ordersDao.getOrdersDetailByStore(orderId);
