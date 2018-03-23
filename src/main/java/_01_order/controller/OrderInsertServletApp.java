@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,14 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import _01_order.model.ORDER_DETAILS;
-import _01_order.model.ORDER_DETAILS_Extra;
 import _01_order.model.ORDERS;
+import _01_order.model.ORDER_DETAILS_Extra;
 import _01_order.model.dao.OrdersDao;
 import _01_order.model.dao.OrdersDaoImpl;
+import _01_order.model.dao.OrdersImageDaoImpl;
 import _01_order.model.dao.OrdersServiceImpl;
 
 @WebServlet("/OrderInsertServletApp.do")
@@ -95,6 +92,7 @@ public class OrderInsertServletApp extends HttpServlet {
 		System.out.println("若有來自BufferredReader資訊先列印出" + orderJson);
 
 		OrdersDao ordersDao = new OrdersDaoImpl();
+		OrdersImageDaoImpl ordersDaoImage = new OrdersImageDaoImpl();
 		String action = orderJsonObj.get("action").getAsString();
 		
 		if (action.equals("getOrderByUser")) {
@@ -104,13 +102,13 @@ public class OrderInsertServletApp extends HttpServlet {
 			System.out.println("查詢訂單資訊: " + ordersDetail.toString());
 		} else if (action.equals("getFoodPicUrls")) {
 			Integer orderId = orderJsonObj.get("order_id").getAsInt();
-			List<String> foodPicUrls = ordersDao.getFoodPicUrls(orderId);
+			List<String> foodPicUrls = ordersDaoImage.getFoodPicUrls(orderId);
 			writeText(response, gson.toJson(foodPicUrls));
 			System.out.println("查詢訂單圖片網址: " + foodPicUrls.toString());
 		} else if (action.equals("getFoodPicByte")) {
 			OutputStream os = response.getOutputStream();
 			Integer foodId = orderJsonObj.get("food_id").getAsInt();
-			byte[] food_pic_mdpi = ordersDao.getFoodPicMdpiByte(foodId);
+			byte[] food_pic_mdpi = ordersDaoImage.getFoodPicMdpiByte(foodId);
 			if (food_pic_mdpi != null) {
 				response.setContentType("image/jpeg");
 				response.setContentLength(food_pic_mdpi.length);

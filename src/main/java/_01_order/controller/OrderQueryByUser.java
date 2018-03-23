@@ -18,13 +18,13 @@ import _01_order.model.ORDERS;
 import _01_order.model.dao.OrdersDao;
 import _01_order.model.dao.OrdersDaoImpl;
 
-@WebServlet("/OrderQueryServlet.do")
-public class OrderQueryServlet extends HttpServlet {
+@WebServlet("/OrderQueryByUser.do")
+public class OrderQueryByUser extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String CONTENT_TYPE_1 = "text/html; charset=UTF-8";
 	private static final String CONTENT_TYPE_2 = "application/json; charset=UTF-8";
 
-	public OrderQueryServlet() {
+	public OrderQueryByUser() {
 		super();
 	}
 

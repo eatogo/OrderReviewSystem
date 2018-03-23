@@ -44,6 +44,7 @@ public class OrdersDaoImpl implements OrdersDao {
 		}
 	}
 
+	// 新增一筆訂單(App端)
 	@Override
 	public int insertOrder(ORDERS ob) {
 		int n = 0;
@@ -107,7 +108,7 @@ public class OrdersDaoImpl implements OrdersDao {
 	}
 
 	@Override
-	// 取得單筆訂單與明細
+	// 取得單筆訂單與明細 (可共用)
 	public ORDERS getOrderByOrderId(int orderId) {
 		ORDERS ob = null;
 		ORDER_DETAILS_Extra odb_ex = null;
@@ -178,7 +179,7 @@ public class OrdersDaoImpl implements OrdersDao {
 		return ob;
 	}
 
-	// 取得使用者多筆訂單明細
+	// 取得顧客多筆訂單明細 (App端用)
 	@Override
 	public List<ORDERS> getOrdersDetailByUser(int userId) {
 		List<ORDERS> orderDetail = new ArrayList<>();
@@ -200,52 +201,51 @@ public class OrdersDaoImpl implements OrdersDao {
 		return orderDetail;
 	}
 
-	// 取得用戶訂單列表
+	// 取得用戶訂單列表 (App端用)
 	@Override
 	public List<Integer> getOrderListByUser(int userId) {
-		List<Integer> userOrders = new ArrayList<>();
+		List<Integer> userOrdersList = new ArrayList<>();
 		String getOrdersByUserSql = "SELECT * FROM ORDERS WHERE order_user = ?;";
 		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(getOrdersByUserSql);) {
 			ps.setInt(1, userId);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				Integer order_id = rs.getInt("order_id");
-				userOrders.add(order_id);
+				userOrdersList.add(order_id);
 			}
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		System.out.println("用戶訂單清單" + userOrders);
-		return userOrders;
+		System.out.println("用戶訂單清單" + userOrdersList);
+		return userOrdersList;
 	}
 
-	// 取得店家訂單列表
+	// 取得店家訂單列表(Web端用)
 	@Override
 	public List<Integer> getOrderListByStore(int orderStore) {
-		List<Integer> storeOrders = new ArrayList<>();
+		List<Integer> storeOrdersList = new ArrayList<>();
 		String getOrdersByStoreSql = "SELECT * FROM ORDERS WHERE order_store = ?";
-		String sql_2 = "";
 		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(getOrdersByStoreSql);) {
 			ps.setInt(1, orderStore);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				Integer order_store = rs.getInt("orderStore");
-				storeOrders.add(order_store);
+				storeOrdersList.add(order_store);
 			}
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		System.out.println("店家訂單清單" + storeOrders);
-		return storeOrders;
+		System.out.println("店家訂單清單" + storeOrdersList);
+		return storeOrdersList;
 	}
 
+	// 取得店家訂單明細(Web端用)
 	@Override
-	public List<ORDERS> getOrdersDeatilByStore(int storeId) {
+	public List<ORDERS> getOrdersDetailByStore(int storeId) {
 		List<ORDERS> orderDetail = new ArrayList<>();
 		String getOrdersByStore = "SELECT order_id FROM ORDERS WHERE order_store = ? ORDER BY order_time desc;";
-		try (Connection conn = ds.getConnection();
-				PreparedStatement ps = conn.prepareStatement(getOrdersByStore);) {
-			ps.setInt(1, storeId); 
+		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(getOrdersByStore);) {
+			ps.setInt(1, storeId);
 			try (ResultSet rs = ps.executeQuery();) {
 				while (rs.next()) {
 					Integer orderId = rs.getInt("order_id");
@@ -255,41 +255,32 @@ public class OrdersDaoImpl implements OrdersDao {
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		
-
 		return orderDetail;
 	}
 
-	// 變更交易確認狀態
-	public int updateOrderStatus_0(ORDERS order) {
-		String updateOrderStatus_0 = "UPDATE ORDERS SET" + " order_confirm_user = " + order.getOrder_confirm_user()
-				+ ", order_confirm_time = " + order.getOrder_confirm_time() + ", order_status = "
-				+ order.getOrder_status() + ", order_finished_time = " + order.getOrder_finished_time()
-				+ " WHERE order_id = " + order.getOrder_id();
-		int count = 0;
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(updateOrderStatus_0);) {
-			count = ps.executeUpdate();
+	// 取得店家訂單明細，依狀態篩選(Web端用)
+	@Override
+	public List<ORDERS> getOrdersDetailByStoreWithStatus(int storeId, String status) {
+		List<ORDERS> orderDetail = new ArrayList<>();
+		String getOrdersByStoreoStatus = "SELECT * FROM ORDERS WHERE order_store = ? AND order_status = ? ORDER BY order_time desc;";
+		try (Connection conn = ds.getConnection();
+				PreparedStatement ps = conn.prepareStatement(getOrdersByStoreoStatus);) {
+			ps.setInt(1, storeId);
+			ps.setString(2, status);
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					Integer orderId = rs.getInt("order_id");
+					orderDetail.add(getOrderByOrderId(orderId));
+				}
+			}
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		return count;
+		return orderDetail;
 	}
 
-	// 變更交易確認狀態
-	public int updateOrderStatus_1(ORDERS order) {
-		String updateOrderStatus_1 = "UPDATE ORDERS SET" + ", order_status = " + order.getOrder_status()
-				+ ", order_finished_time = " + order.getOrder_finished_time() + " WHERE order_id = "
-				+ order.getOrder_id();
-		int count = 0;
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(updateOrderStatus_1);) {
-			count = ps.executeUpdate();
-		} catch (SQLException ex) {
-			throw new RuntimeException(ex);
-		}
-		return count;
-	}
-
-	// 取得Blob格式餐點圖片food_pic_mdpi
+	// 取得餐點圖片food_pic_mdpi(Blob格式)
+	@Override
 	public byte[] getFoodPic(Integer food_id) {
 		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id = ?;";
 		byte[] food_pic_mdpi = null;
@@ -305,8 +296,8 @@ public class OrdersDaoImpl implements OrdersDao {
 		return food_pic_mdpi;
 	}
 
-	// 取得餐點圖片連結food_pic_mdpi
-	public FOODS getFoods(Integer food_id) {
+	// 取得餐點名稱、單價
+	public FOODS getFoodNamePrice(Integer food_id) {
 		String sql = "SELECT food_name, food_price FROM FOODS WHERE food_id = ?;";
 		FOODS foods = null;
 		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
@@ -322,56 +313,6 @@ public class OrdersDaoImpl implements OrdersDao {
 			throw new RuntimeException(ex);
 		}
 		return foods;
-	}
-
-	@Override
-	public String getFoodPicUrl(int foodId) {
-		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id = ?;";
-		String foodPicUrl = null;
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
-			ps.setInt(1, foodId);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				foodPicUrl = rs.getString(1);
-			}
-		} catch (SQLException ex) {
-			throw new RuntimeException(ex);
-		}
-		return foodPicUrl;
-	}
-
-	@Override
-	public List<String> getFoodPicUrls(int orderId) {
-		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id IN (SELECT order_food FROM ORDER_DETAILS WHERE order_id = 6);";
-		List<String> foodPicUrls = new ArrayList<String>();
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
-			ps.setInt(1, orderId);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				String food_pic_mdpi = rs.getString(1);
-				foodPicUrls.add(food_pic_mdpi);
-			}
-		} catch (SQLException ex) {
-			throw new RuntimeException(ex);
-		}
-		return foodPicUrls;
-	}
-
-	// 若資料庫儲存圖片時使用
-	@Override
-	public byte[] getFoodPicMdpiByte(int foodId) {
-		String sql = "SELECT food_pic_mdpi FROM FOODS WHERE food_id = ?;";
-		byte[] foodPicMdpiByte = null;
-		try (Connection conn = ds.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);) {
-			ps.setInt(1, foodId);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				foodPicMdpiByte = rs.getBytes(1);
-			}
-		} catch (SQLException ex) {
-			throw new RuntimeException(ex);
-		}
-		return foodPicMdpiByte;
 	}
 
 }

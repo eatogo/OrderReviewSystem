@@ -44,11 +44,7 @@ public class ReviewsDaoImpl implements ReviewsDao {
 				+ "VALUES(null, ?, ?, ?, ?, ?)";
 		String reviewCountSql = "SELECT food_review_count FROM FOODS WHERE food_id = ? ";
 		String updateReviewCountSql = "UPDATE FOODS SET food_review_count = food_review_count + 1 WHERE food_id = ?";
-		// String updateReviewCountSql = "UPDATE FOODS SET food_review_count = ? + 1
-		// WHERE food_id = ?";
-
 		try (
-				// Connection conn = DriverManager.getConnection(Db.URLALL);
 				Connection conn = ds.getConnection();
 				PreparedStatement ps = conn.prepareStatement(insertReviewSql);
 				PreparedStatement ps1 = conn.prepareStatement(reviewCountSql);
@@ -76,32 +72,8 @@ public class ReviewsDaoImpl implements ReviewsDao {
 		}
 		return count;
 	}
-
-	@Override
-	public int updateReviewCount(int food_id) {
-		int count = 0;
-		String reviewCountSql = "SELECT food_review_count FROM FOODS WHERE food_id = ? ";
-		String updateReviewCountSql = "UPDATE FOODS SET food_review_count = ? + 1 WHERE food_id = ?";
-		try (Connection conn = ds.getConnection();
-				// Connection conn = DriverManager.getConnection(Db.URLALL);
-				PreparedStatement ps1 = conn.prepareStatement(reviewCountSql);
-				PreparedStatement ps2 = conn.prepareStatement(updateReviewCountSql);) {
-			ps1.setInt(1, food_id);
-			ResultSet rset = ps1.executeQuery();
-			// while (rset.next()) {
-			rset.next();
-			long reviewCount = rset.getLong("food_review_count");
-			System.out.println("long:" + reviewCount);
-			ps2.setLong(1, reviewCount);
-			ps2.setInt(2, food_id);
-			count = ps2.executeUpdate();
-			// }
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return count;
-	}
-
+	
+	// 為查詢評價準備，目前系統無查詢評價設計
 	@Override
 	public List<REVIEWS> getReviewsByFood(int review_food) {
 		String getReviewByFoodSql = "SELECT review_id, review_user, review_time, review_comment "
@@ -131,13 +103,5 @@ public class ReviewsDaoImpl implements ReviewsDao {
 		}
 		return reviewlist;
 	}
-
-	@Override
-	public int getReviewsNumber() {
-		String getReviewsNumberSql = "SELECT count(*) FROM REVIEWS";
-		/*
-		 * /
-		 */
-		return 0;
-	}
 }
+

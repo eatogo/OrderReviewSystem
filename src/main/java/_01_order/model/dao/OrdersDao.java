@@ -12,19 +12,14 @@ public interface OrdersDao {
 
 	List<ORDERS> getOrdersDetailByUser(int orderUser);
 	
-	List<ORDERS> getOrdersDeatilByStore(int storeId);
+	List<ORDERS> getOrdersDetailByStore(int storeId);
+	
+	List<ORDERS> getOrdersDetailByStoreWithStatus(int storeId, String status);
 	
 	List<Integer> getOrderListByUser(int userId);
 	
-	
 	List<Integer> getOrderListByStore (int orderStore);
 	
-	String getFoodPicUrl(int foodId);
-	
-	List<String> getFoodPicUrls(int orderId);
-	
-	byte[] getFoodPicMdpiByte(int foodId); //若資料庫儲存圖片時改用
-	
-	
+	byte[] getFoodPic(Integer food_id);
 
 }

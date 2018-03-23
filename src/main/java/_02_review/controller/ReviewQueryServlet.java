@@ -21,26 +21,21 @@ public class ReviewQueryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
 
-	public ReviewQueryServlet() {
-		super();
-	}
-	
-	@Override
-	public void init() throws ServletException {
-		super.init();
-	}
-
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
+		doGet(request,response);
+	}
 
-		Gson gson = new Gson();
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
 		/*/
-		 * 尚未處理App端送來之查詢評價請求，查無評價之回應
-		 * 測試解析Web端送來之查詢評價請求資訊 
+		 * 測試解析Web端送來之查詢評價請求資訊 ，目前系統無查詢評價設計
+		 * 尚未處理App端送來之查詢評價請求，若無該food查無評價之回應
+		 * 
 		 */
-		 
+		
+		Gson gson = new Gson();
 		Integer review_food = Integer.parseInt(request.getParameter("review_food"));
 		ReviewsDao reviewsDao = new ReviewsDaoImpl();
 		List<REVIEWS> reviewsListBean = reviewsDao.getReviewsByFood(review_food);
@@ -48,12 +43,6 @@ public class ReviewQueryServlet extends HttpServlet {
 		String reviewsListJson = gson.toJson(reviewsListBean); // Object to JSON
 		System.out.println("查詢評價資訊JSON: " + reviewsListJson);
 		writeText(response, reviewsListJson);
-
-	}
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doPost(request, response);
 	}
 
 	private void writeText(HttpServletResponse response, String outText) throws IOException {
@@ -62,5 +51,4 @@ public class ReviewQueryServlet extends HttpServlet {
 		out.print(outText);
 		System.out.println("output: " + outText);
 	}
-
 }
